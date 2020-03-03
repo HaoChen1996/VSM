@@ -38,6 +38,18 @@ public class Dictionary {
      */
     public Hashtable<String, Set<String>> buildInvertedIndex(List<JavaClass> javaClasses){
         Hashtable<String, Set<String>> invertedIndex = new Hashtable<>();
+        for(JavaClass javaClass : javaClasses) {
+            for(String term: javaClass.getTerms()) {
+                if(!invertedIndex.containsKey(term)) {
+                    Set<String> set = new HashSet<>();
+                    set.add(javaClass.getFileName());
+                    invertedIndex.put(term,set);
+                }else {
+                    Set<String> set = invertedIndex.get(term);
+                    set.add(javaClass.getFileName());
+                }
+            }
+        }
         return invertedIndex;
     }
 
@@ -49,6 +61,11 @@ public class Dictionary {
      */
     public Hashtable<String, Double> calculateIdfs(int numberOfDocs) {
         Hashtable<String, Double> idfs = new Hashtable<>();
+        for(String term : invertedIndex.keySet()) {
+            int m = invertedIndex.get(term).size();
+            Double res = Math.log(numberOfDocs/m);
+            idfs.put(term,res);
+        }
         return idfs;
     }
 

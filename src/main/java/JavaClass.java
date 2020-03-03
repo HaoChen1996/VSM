@@ -1,3 +1,4 @@
+import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreSentence;
@@ -54,6 +55,23 @@ public class JavaClass {
      */
     public String readDocument(File file) {
         String content = "";
+        try {
+            InputStream is =new FileInputStream(file);
+            BufferedReader bf = new BufferedReader(new InputStreamReader(is));
+            String line = bf.readLine();
+            StringBuilder sb = new StringBuilder();
+
+            while(line!=null) {
+                sb.append(line).append("\n");
+                line = bf.readLine();
+            }
+            content = sb.toString();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return content;
     }
 
@@ -81,7 +99,7 @@ public class JavaClass {
         Utility.pipeline.annotate(coreDocument);
         for (CoreSentence sentense: coreDocument.sentences()){
             for (CoreLabel token: sentense.tokens()){
-                String tokenLemma=""; //do the Lemmatization and get the lemma of the token.
+                String tokenLemma=token.get(CoreAnnotations.LemmaAnnotation.class); //do the Lemmatization and get the lemma of the token.
                 List<String> tokenSplits = splitIdentifiers(tokenLemma); // deal with the CamelCases.
                 tokens.addAll(tokenSplits);
             }
@@ -102,6 +120,10 @@ public class JavaClass {
      */
     private List<String> splitIdentifiers(String tokenLemma){
         List<String> splitTokens = new ArrayList<>();
+        String[] tokens = tokenLemma.split("(?<!(^|[A-Z0-9]))(?=[A-Z0-9])|(?<!^)(?=[A-Z0-9][a-z0-9])");
+        for(String token : tokens) {
+            splitTokens.add(token);
+        }
         return splitTokens;
     }
 
@@ -132,6 +154,14 @@ public class JavaClass {
      */
     private Hashtable<String, Double> calculateTfs( List<String> terms) {
         Hashtable<String, Double> tfs = new Hashtable<>();
+        for(String term : terms) {
+            if(!tfs.containsKey(term)) {
+                tfs.put(term,1d);
+            }else {
+                double num = tfs.get(term);
+                tfs.put(term,num+1);
+            }
+        }
         return tfs;
     }
 
@@ -144,6 +174,13 @@ public class JavaClass {
      */
     public List<Double>  calculateTfIdfs(Dictionary dictionary) {
         List<Double> tfIdfs = new ArrayList<>();
+        final Hashtable<String, Double> idfs = dictionary.getIdfs();
+        for(String token : idfs.keySet()) {
+            Double idf = idfs.get(token);
+            Double tf = tfs.get(token);
+            Double tfidf = tf * idf;
+            tfIdfs.add(tfidf);
+        }
         return tfIdfs;
     }
 
@@ -154,6 +191,7 @@ public class JavaClass {
      */
     public double calculateCosineSimilarity(JavaClass query) {
         double cosineSimilarity = 0;
+
         return cosineSimilarity;
     }
 }
