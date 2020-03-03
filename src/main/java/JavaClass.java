@@ -191,7 +191,18 @@ public class JavaClass {
      */
     public double calculateCosineSimilarity(JavaClass query) {
         double cosineSimilarity = 0;
-
+        List<Double> tfIdfs = query.getTfIdfs();
+        double sum = 0d;
+        double sum2= 0d;
+        double sum3 = 0d;
+        for(int i=0;i<this.tfIdfs.size();i++) {
+            sum+=this.tfIdfs.get(i)+tfIdfs.get(i);
+            sum2+=Math.pow(this.tfIdfs.get(i),2);
+            sum3+=Math.pow(tfIdfs.get(i),2);
+        }
+        sum2=Math.sqrt(sum2);
+        sum3=Math.sqrt(sum3);
+        cosineSimilarity = sum / (sum2 * sum3);
         return cosineSimilarity;
     }
 }
