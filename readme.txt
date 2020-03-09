@@ -1,1 +1,1 @@
-test
+This project I only implement the function, because the structure is already provided, so I just use the hash table data structure and array to solve the problem, also I call the math library to implement it. 

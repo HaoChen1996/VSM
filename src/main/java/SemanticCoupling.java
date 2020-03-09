@@ -35,7 +35,6 @@ public class SemanticCoupling {
 
         buildDictionary(javaClasses);
 
-
         // Calculate TF-IDF for every Java file
         javaClasses.forEach(item -> item.setTfIdfs(item.calculateTfIdfs(dictionary)));
         // Calculate the cosine similarities given the target Java file name.

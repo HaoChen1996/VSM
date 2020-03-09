@@ -2,6 +2,7 @@ import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreSentence;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.util.*;
@@ -120,10 +121,8 @@ public class JavaClass {
      */
     private List<String> splitIdentifiers(String tokenLemma){
         List<String> splitTokens = new ArrayList<>();
-        String[] tokens = tokenLemma.split("(?<!(^|[A-Z0-9]))(?=[A-Z0-9])|(?<!^)(?=[A-Z0-9][a-z0-9])");
-        for(String token : tokens) {
-            splitTokens.add(token);
-        }
+        String[] tokens = StringUtils.splitByCharacterTypeCamelCase(tokenLemma);
+        splitTokens.addAll(Arrays.asList(tokens));
         return splitTokens;
     }
 
@@ -159,7 +158,7 @@ public class JavaClass {
                 tfs.put(term,1d);
             }else {
                 double num = tfs.get(term);
-                tfs.put(term,num+1);
+                tfs.put(term,num+1d);
             }
         }
         return tfs;
@@ -174,10 +173,11 @@ public class JavaClass {
      */
     public List<Double>  calculateTfIdfs(Dictionary dictionary) {
         List<Double> tfIdfs = new ArrayList<>();
-        final Hashtable<String, Double> idfs = dictionary.getIdfs();
+        Hashtable<String, Double> idfs = dictionary.getIdfs();
         for(String token : idfs.keySet()) {
             Double idf = idfs.get(token);
             Double tf = tfs.get(token);
+            if(tf == null) tf = 0d;
             Double tfidf = tf * idf;
             tfIdfs.add(tfidf);
         }
@@ -196,9 +196,9 @@ public class JavaClass {
         double sum2= 0d;
         double sum3 = 0d;
         for(int i=0;i<this.tfIdfs.size();i++) {
-            sum+=this.tfIdfs.get(i)+tfIdfs.get(i);
-            sum2+=Math.pow(this.tfIdfs.get(i),2);
-            sum3+=Math.pow(tfIdfs.get(i),2);
+            sum+=this.tfIdfs.get(i)*tfIdfs.get(i);
+            sum2+=Math.pow(this.tfIdfs.get(i),2.0);
+            sum3+=Math.pow(tfIdfs.get(i),2.0);
         }
         sum2=Math.sqrt(sum2);
         sum3=Math.sqrt(sum3);

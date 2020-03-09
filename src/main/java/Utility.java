@@ -61,7 +61,21 @@ public class Utility {
      */
     public static List<Entry<String, Double>> rankDimilarDocuments(Hashtable<String, Double> documentSimilarities) {
         List<Entry<String, Double>> listOfEntries = null;
-
+        Set<Entry<String, Double>> entries = documentSimilarities.entrySet();
+        Iterator i = entries.iterator();
+        listOfEntries = new ArrayList<>();
+        while(i.hasNext()) {
+            Map.Entry entry = (Map.Entry)i.next();
+            listOfEntries.add(entry);
+        }
+        Collections.sort(listOfEntries, new Comparator<Entry<String, Double>>() {
+            @Override
+            public int compare(Entry<String, Double> o1, Entry<String, Double> o2) {
+                Double value1 = o1.getValue();
+                Double value2 = o2.getValue();
+                return -value1.compareTo(value2);
+            }
+        });
         return listOfEntries;
     }
 
